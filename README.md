@@ -2,6 +2,8 @@
 
 E2E test automation for [Kriso.ee](https://www.kriso.ee) bookshop using [Playwright](https://playwright.dev).
 
+**Slides:** https://tanjaq.github.io/playwright-kriso/slides/
+
 Your task is to create automated tests based on the test cases described below.
 
 ---

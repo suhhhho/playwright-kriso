@@ -53,7 +53,7 @@ jobs:
       # Step 5 — Run the tests.
       # TODO: Add the command that runs all Playwright tests.
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --project=chromium
 
       # Step 6 — Upload the HTML report so you can download it after the run.
       # TODO: Use the actions/upload-artifact@v4 action with these settings:

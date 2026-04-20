@@ -14,7 +14,14 @@ export class BasePage {
   }
 
   async acceptCookies() {
-    await this.consentButton.click();
+    try {
+      const visible = await this.consentButton.isVisible({ timeout: 5000 });
+      if (visible) {
+        await this.consentButton.click({ timeout: 5000 });
+      }
+    } catch {
+      // Cookie banner is not always shown in CI environments.
+    }
   }
 
   async verifyLogo() {

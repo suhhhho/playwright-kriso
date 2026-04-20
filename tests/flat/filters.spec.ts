@@ -21,11 +21,18 @@ test.describe('Navigate Products via Filters', () => {
     page = await context.newPage();
 
     await page.goto('https://www.kriso.ee/');
-    await page.getByRole('button', { name: 'Nõustun' }).click();
+    try {
+      const consentButton = page.getByRole('button', { name: 'Nõustun' });
+      if (await consentButton.isVisible({ timeout: 5000 })) {
+        await consentButton.click({ timeout: 5000 });
+      }
+    } catch {
+      // Cookie banner is not always shown in CI environments.
+    }
   });
 
   test.afterAll(async () => {
-    await page.context().close();
+    await page?.context().close();
   });
 
   test('Navigate and filter products', async () => {

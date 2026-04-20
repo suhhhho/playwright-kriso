@@ -28,7 +28,7 @@ test.describe('Search for Books by Keywords (POM)', () => {
     });
   
     test.afterAll(async () => {
-      await page.context().close();
+      await page?.context().close();
     });
   
     test('Test logo is visible', async () => {

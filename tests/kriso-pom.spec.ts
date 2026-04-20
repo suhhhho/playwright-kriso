@@ -19,7 +19,7 @@ test.describe('Search for Books by Keywords (POM)', () => {
   });
 
   test.afterAll(async () => {
-    await page.context().close();
+    await page?.context().close();
   });
 
   test('search scenarios with POM', async () => {
@@ -53,7 +53,7 @@ test.describe('Add Books to Shopping Cart (POM)', () => {
   });
 
   test.afterAll(async () => {
-    await page.context().close();
+    await page?.context().close();
   });
 
   test('cart scenarios with POM', async () => {
@@ -96,7 +96,7 @@ test.describe('Navigate Products via Filters (POM)', () => {
   });
 
   test.afterAll(async () => {
-    await page.context().close();
+    await page?.context().close();
   });
 
   test('filter scenarios with POM', async () => {

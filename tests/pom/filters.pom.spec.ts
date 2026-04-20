@@ -29,7 +29,7 @@ test.describe('Navigate Products via Filters (POM)', () => {
   });
 
   test.afterAll(async () => {
-    await page.context().close();
+    await page?.context().close();
   });
 
   test('Navigate and filter products with POM', async () => {

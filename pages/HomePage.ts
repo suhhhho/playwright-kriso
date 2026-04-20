@@ -78,7 +78,7 @@ export class HomePage extends BasePage {
   }
 
   async verifyIsbnShown(isbn: string) {
-    await expect(this.page.getByText(new RegExp(isbn))).toBeVisible();
+    await expect(this.page.locator('[itemprop="isbn"]').filter({ hasText: isbn }).first()).toBeVisible();
   }
 
   async openMusicBooksCategory() {

@@ -47,7 +47,7 @@ test.describe('Search for Books by Keywords', () => {
     await page.locator('#top-search-btn-wrap').click();
 
     await expect(page.getByRole('link', { name: /gone girl/i }).first()).toBeVisible();
-    await expect(page.getByText('9780307588371')).toBeVisible();
+    await expect(page.locator('[itemprop="isbn"]').filter({ hasText: '9780307588371' }).first()).toBeVisible();
   });
 });
 

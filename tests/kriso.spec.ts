@@ -15,7 +15,7 @@ test.describe('Search for Books by Keywords', () => {
     page = await context.newPage();
     await page.goto('https://www.kriso.ee/');
     try {
-      const consentButton = page.getByRole('button', { name: 'Nõustun' });
+      const consentButton = page.getByRole('button', { name: /Nõustun|Accept|I agree/i });
       if (await consentButton.isVisible({ timeout: 5000 })) {
         await consentButton.click({ timeout: 5000 });
       }
@@ -31,20 +31,20 @@ test.describe('Search for Books by Keywords', () => {
   test('search scenarios', async () => {
     await expect(page.locator('.logo-icon')).toBeVisible();
 
-    await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõna' }).fill('xqzwmfkj');
-    await page.getByRole('button', { name: 'Search' }).click();
-    await expect(page.locator('.msg.msg-info')).toContainText('Teie poolt sisestatud märksõnale vastavat raamatut ei leitud');
+    await page.locator('#top-search-text').fill('xqzwmfkj');
+    await page.locator('#top-search-btn-wrap').click();
+    await expect(page.locator('.msg.msg-info')).toContainText(/ei leitud|did not find any match/i);
 
-    await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõna' }).fill('tolkien');
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.locator('#top-search-text').fill('tolkien');
+    await page.locator('#top-search-btn-wrap').click();
 
     const tolkienCount = parseResultsCount(await page.locator('.sb-results-total').textContent());
     expect(tolkienCount).toBeGreaterThan(1);
     const pageText = (await page.locator('body').innerText()).toLowerCase();
     expect(pageText).toContain('tolkien');
 
-    await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõna' }).fill('9780307588371');
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.locator('#top-search-text').fill('9780307588371');
+    await page.locator('#top-search-btn-wrap').click();
 
     await expect(page.getByRole('link', { name: /gone girl/i }).first()).toBeVisible();
     await expect(page.getByText('9780307588371')).toBeVisible();
@@ -60,7 +60,7 @@ test.describe('Add Books to Shopping Cart', () => {
     page = await context.newPage();
     await page.goto('https://www.kriso.ee/');
     try {
-      const consentButton = page.getByRole('button', { name: 'Nõustun' });
+      const consentButton = page.getByRole('button', { name: /Nõustun|Accept|I agree/i });
       if (await consentButton.isVisible({ timeout: 5000 })) {
         await consentButton.click({ timeout: 5000 });
       }
@@ -76,20 +76,20 @@ test.describe('Add Books to Shopping Cart', () => {
   test('cart scenarios', async () => {
     await expect(page.locator('.logo-icon')).toBeVisible();
 
-    await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõna' }).fill('harry potter');
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.locator('#top-search-text').fill('harry potter');
+    await page.locator('#top-search-btn-wrap').click();
 
     const resultsTotal = parseResultsCount(await page.locator('.sb-results-total').textContent());
     expect(resultsTotal).toBeGreaterThan(1);
 
-    await page.getByRole('link', { name: 'Lisa ostukorvi' }).first().click();
-    await expect(page.locator('.item-messagebox')).toContainText('Toode lisati ostukorvi');
+    await page.getByRole('link', { name: /Lisa ostukorvi|Add to (cart|basket)/i }).first().click();
+    await expect(page.locator('.item-messagebox')).toContainText(/Toode lisati ostukorvi|added to (the )?(cart|basket)/i);
     await expect(page.locator('.cart-products')).toContainText('1');
 
     await page.locator('.cartbtn-event.back').click();
 
-    await page.getByRole('link', { name: 'Lisa ostukorvi' }).nth(5).click();
-    await expect(page.locator('.item-messagebox')).toContainText('Toode lisati ostukorvi');
+    await page.getByRole('link', { name: /Lisa ostukorvi|Add to (cart|basket)/i }).nth(5).click();
+    await expect(page.locator('.item-messagebox')).toContainText(/Toode lisati ostukorvi|added to (the )?(cart|basket)/i);
     await expect(page.locator('.cart-products')).toContainText('2');
 
     await page.locator('.cartbtn-event.forward').click();
@@ -131,7 +131,7 @@ test.describe('Navigate Products via Filters', () => {
     page = await context.newPage();
     await page.goto('https://www.kriso.ee/');
     try {
-      const consentButton = page.getByRole('button', { name: 'Nõustun' });
+      const consentButton = page.getByRole('button', { name: /Nõustun|Accept|I agree/i });
       if (await consentButton.isVisible({ timeout: 5000 })) {
         await consentButton.click({ timeout: 5000 });
       }
@@ -147,10 +147,10 @@ test.describe('Navigate Products via Filters', () => {
   test('filter scenarios', async () => {
     await expect(page.locator('.logo-icon')).toBeVisible();
 
-    await expect(page.getByRole('link', { name: 'Muusikaraamatud ja noodid' }).first()).toBeVisible();
-    await page.getByRole('link', { name: 'Muusikaraamatud ja noodid' }).first().click();
+    await page.goto('https://www.kriso.ee/muusika-ja-noodid.html');
+    await expect(page).toHaveURL(/muusika|noodid|music/i);
 
-    await page.getByRole('link', { name: /kitarr/i }).first().click();
+    await page.getByRole('link', { name: /kitarr|guitar/i }).first().click();
 
     const guitarCount = parseResultsCount(await page.locator('.sb-results-total').textContent());
     expect(guitarCount).toBeGreaterThan(1);

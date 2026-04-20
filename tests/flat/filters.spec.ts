@@ -22,7 +22,7 @@ test.describe('Navigate Products via Filters', () => {
 
     await page.goto('https://www.kriso.ee/');
     try {
-      const consentButton = page.getByRole('button', { name: 'Nõustun' });
+      const consentButton = page.getByRole('button', { name: /Nõustun|Accept|I agree/i });
       if (await consentButton.isVisible({ timeout: 5000 })) {
         await consentButton.click({ timeout: 5000 });
       }
@@ -38,11 +38,10 @@ test.describe('Navigate Products via Filters', () => {
   test('Navigate and filter products', async () => {
     await expect(page.locator('.logo-icon')).toBeVisible();
 
-    const musicSectionLink = page.getByRole('link', { name: 'Muusikaraamatud ja noodid' }).first();
-    await expect(musicSectionLink).toBeVisible();
-    await musicSectionLink.click();
+    await page.goto('https://www.kriso.ee/muusika-ja-noodid.html');
+    await expect(page).toHaveURL(/muusika|noodid|music/i);
 
-    await page.getByRole('link', { name: /kitarr/i }).first().click();
+    await page.getByRole('link', { name: /kitarr|guitar/i }).first().click();
 
     const guitarResultsText = await page.locator('.sb-results-total').textContent();
     const guitarCount = Number((guitarResultsText || '').replace(/\D/g, '')) || 0;

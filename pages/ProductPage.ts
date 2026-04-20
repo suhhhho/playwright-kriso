@@ -12,7 +12,7 @@ export class ProductPage extends BasePage {
   }
 
   async openGuitarCategory() {
-    await this.page.getByRole('link', { name: /kitarr/i }).first().click();
+    await this.page.getByRole('link', { name: /kitarr|guitar/i }).first().click();
   }
 
   async applyEnglishLanguageFilter() {

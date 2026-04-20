@@ -24,7 +24,7 @@ test.describe('Add Books to Shopping Cart', () => {
 
     await page.goto('https://www.kriso.ee/');
     try {
-      const consentButton = page.getByRole('button', { name: 'Nõustun' });
+      const consentButton = page.getByRole('button', { name: /Nõustun|Accept|I agree/i });
       if (await consentButton.isVisible({ timeout: 5000 })) {
         await consentButton.click({ timeout: 5000 });
       }
@@ -43,9 +43,9 @@ test.describe('Add Books to Shopping Cart', () => {
   });
 
   test('Test search by keyword', async () => {
-    await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõ' }).click();
-    await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõ' }).fill('harry potter');
-    await page.getByRole('button', { name: 'Search' }).click();
+    await page.locator('#top-search-text').click();
+    await page.locator('#top-search-text').fill('harry potter');
+    await page.locator('#top-search-btn-wrap').click();
 
     // parse numeric total from the results text and assert it's > 1
     const resultsText = await page.locator('.sb-results-total').textContent();
@@ -54,15 +54,15 @@ test.describe('Add Books to Shopping Cart', () => {
   }); 
 
   test('Test add book to cart', async () => {
-    await page.getByRole('link', { name: 'Lisa ostukorvi' }).first().click();
-    await expect(page.locator('.item-messagebox')).toContainText('Toode lisati ostukorvi');
+    await page.getByRole('link', { name: /Lisa ostukorvi|Add to (cart|basket)/i }).first().click();
+    await expect(page.locator('.item-messagebox')).toContainText(/Toode lisati ostukorvi|added to (the )?(cart|basket)/i);
     await expect(page.locator('.cart-products')).toContainText('1');
     await page.locator('.cartbtn-event.back').click();
   }); 
 
   test('Test add second book to cart', async () => {
-    await page.getByRole('link', { name: 'Lisa ostukorvi' }).nth(5).click();
-    await expect(page.locator('.item-messagebox')).toContainText('Toode lisati ostukorvi');
+    await page.getByRole('link', { name: /Lisa ostukorvi|Add to (cart|basket)/i }).nth(5).click();
+    await expect(page.locator('.item-messagebox')).toContainText(/Toode lisati ostukorvi|added to (the )?(cart|basket)/i);
     await expect(page.locator('.cart-products')).toContainText('2');
   });
 

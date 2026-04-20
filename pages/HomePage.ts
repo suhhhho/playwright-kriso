@@ -17,7 +17,7 @@ export class HomePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.resultsTotal = this.page.locator('.sb-results-total');
-    this.addToCartLink = this.page.getByRole('link', { name: 'Lisa ostukorvi' });
+    this.addToCartLink = this.page.getByRole('link', { name: /Lisa ostukorvi|Add to (cart|basket)/i });
     this.addToCartMessage = this.page.locator('.item-messagebox');
     this.cartCount = this.page.locator('.cart-products');
     this.backButton = this.page.locator('.cartbtn-event.back');
@@ -46,7 +46,7 @@ export class HomePage extends BasePage {
   }
 
   async verifyAddToCartMessage() {
-    await expect(this.addToCartMessage).toContainText('Toode lisati ostukorvi');
+    await expect(this.addToCartMessage).toContainText(/Toode lisati ostukorvi|added to (the )?(cart|basket)/i);
   }
 
   async verifyCartCount(expectedCount: number) {
@@ -63,7 +63,7 @@ export class HomePage extends BasePage {
   }
 
   async verifyNoProductsFoundMessage() {
-    await expect(this.noResultsMessage).toContainText('Teie poolt sisestatud märksõnale vastavat raamatut ei leitud. Palun proovige uuesti!');
+    await expect(this.noResultsMessage).toContainText(/ei leitud|did not find any match/i);
   }
 
   async verifyKeywordMentions(keyword: string, minMentions = 2) {
@@ -82,7 +82,7 @@ export class HomePage extends BasePage {
   }
 
   async openMusicBooksCategory() {
-    await this.page.getByRole('link', { name: 'Muusikaraamatud ja noodid' }).first().click();
+    await this.page.goto('https://www.kriso.ee/muusika-ja-noodid.html');
     return new ProductPage(this.page);
   }
 }

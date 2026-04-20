@@ -33,7 +33,7 @@ test.describe('Add Books to Shopping Cart', () => {
   test('Test logo is visible', async () => {
     const logo = page.locator('.logo-icon');
     await expect(logo).toBeVisible();
-  }); 
+  });
 
   test('Test search by keyword', async () => {
     await page.getByRole('textbox', { name: 'Pealkiri, autor, ISBN, märksõ' }).click();
@@ -57,11 +57,13 @@ test.describe('Add Books to Shopping Cart', () => {
     await page.getByRole('link', { name: 'Lisa ostukorvi' }).nth(5).click();
     await expect(page.locator('.item-messagebox')).toContainText('Toode lisati ostukorvi');
     await expect(page.locator('.cart-products')).toContainText('2');
-  }); 
+  });
 
   test('Test cart count and sum is correct', async () => {
     await page.locator('.cartbtn-event.forward').click();
     await expect(page.locator('.order-qty > .o-value')).toContainText('2');
+
+    await expect(page.locator('.tbl-row .title a')).toHaveCount(2);
 
     basketSumOfTwo = await returnBasketSum();
     let basketSumTotal = await returnBasketSumTotal();
@@ -71,6 +73,8 @@ test.describe('Add Books to Shopping Cart', () => {
 
 
   test('Test remove item from cart and counter sum is correct', async () => {
+    const removedItemTitle = ((await page.locator('.tbl-row .title a').first().textContent()) || '').trim();
+
     await page.locator('.icon-remove').nth(0).click();
     await expect(page.locator('.order-qty > .o-value')).toContainText('1');
 
@@ -79,6 +83,11 @@ test.describe('Add Books to Shopping Cart', () => {
     
     expect(basketSumTotal).toBeCloseTo(basketSumOfOne, 2);
     expect(basketSumOfOne).toBeLessThan(basketSumOfTwo);
+
+    await expect(page.locator('.tbl-row .title a')).toHaveCount(1);
+    if (removedItemTitle) {
+      await expect(page.locator('.tbl-row .title a').first()).not.toHaveText(removedItemTitle);
+    }
   });
 
   async function returnBasketSum() {

@@ -9,9 +9,56 @@
  * Tip: run `npx playwright codegen https://www.kriso.ee` to discover selectors.
  */
 import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
+
+test.describe.configure({ mode: 'serial' });
 
 test.describe('Navigate Products via Filters', () => {
+  let page: Page;
 
-  // TODO: implement tests
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    page = await context.newPage();
+
+    await page.goto('https://www.kriso.ee/');
+    await page.getByRole('button', { name: 'Nõustun' }).click();
+  });
+
+  test.afterAll(async () => {
+    await page.context().close();
+  });
+
+  test('Navigate and filter products', async () => {
+    await expect(page.locator('.logo-icon')).toBeVisible();
+
+    const musicSectionLink = page.getByRole('link', { name: 'Muusikaraamatud ja noodid' }).first();
+    await expect(musicSectionLink).toBeVisible();
+    await musicSectionLink.click();
+
+    await page.getByRole('link', { name: /kitarr/i }).first().click();
+
+    const guitarResultsText = await page.locator('.sb-results-total').textContent();
+    const guitarCount = Number((guitarResultsText || '').replace(/\D/g, '')) || 0;
+    expect(guitarCount).toBeGreaterThan(1);
+    await expect(page).toHaveURL(/kitarr|guitar|muusika/i);
+
+    await page.getByRole('link', { name: /inglise|english/i }).first().click();
+    const englishResultsText = await page.locator('.sb-results-total').textContent();
+    const englishCount = Number((englishResultsText || '').replace(/\D/g, '')) || 0;
+    expect(englishCount).toBeLessThan(guitarCount);
+
+    await page.getByRole('link', { name: /cd/i }).first().click();
+    const cdResultsText = await page.locator('.sb-results-total').textContent();
+    const cdCount = Number((cdResultsText || '').replace(/\D/g, '')) || 0;
+    expect(cdCount).toBeLessThanOrEqual(englishCount);
+    await expect(page.locator('body')).toContainText(/cd/i);
+
+    await page.goBack();
+    await page.goBack();
+
+    const afterRemoveResultsText = await page.locator('.sb-results-total').textContent();
+    const afterRemoveCount = Number((afterRemoveResultsText || '').replace(/\D/g, '')) || 0;
+    expect(afterRemoveCount).toBeGreaterThanOrEqual(cdCount);
+  });
 
 });

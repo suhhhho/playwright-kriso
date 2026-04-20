@@ -83,6 +83,14 @@ npx playwright codegen https://www.kriso.ee
 npx playwright show-report
 ```
 
+### Windows PowerShell note
+
+If your PowerShell execution policy blocks `npx`, run Playwright via `npx.cmd` instead:
+
+```bash
+npx.cmd playwright test
+```
+
 ---
 
 ## Test Cases
